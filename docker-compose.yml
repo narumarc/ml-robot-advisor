@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: robo_advisor_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: robo_advisor
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - robo_advisor_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: robo_advisor_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - robo_advisor_network
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.9.2
+    container_name: robo_advisor_mlflow
+    ports:
+      - "5000:5000"
+    environment:
+      BACKEND_STORE_URI: postgresql://mlflow:mlflow@postgres:5432/mlflow
+      DEFAULT_ARTIFACT_ROOT: /mlruns
+    volumes:
+      - mlflow_data:/mlruns
+    depends_on:
+      - postgres
+    command: mlflow server --host 0.0.0.0 --backend-store-uri postgresql://mlflow:mlflow@postgres:5432/mlflow --default-artifact-root /mlruns
+    networks:
+      - robo_advisor_network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: robo_advisor_postgres
+    environment:
+      POSTGRES_USER: mlflow
+      POSTGRES_PASSWORD: mlflow
+      POSTGRES_DB: mlflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - robo_advisor_network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: robo_advisor_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./mlops/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - robo_advisor_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: robo_advisor_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - robo_advisor_network
+
+volumes:
+  mongodb_data:
+  redis_data:
+  mlflow_data:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  robo_advisor_network:
+    driver: bridge
