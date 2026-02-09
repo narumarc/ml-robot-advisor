@@ -50,7 +50,7 @@ Quick Start:
 
 Available Solvers:
 -----------------
-- 'highs': FREE, fast (via scipy) ⭐ RECOMMENDED
+- 'highs': FREE, fast (via scipy) 
 - 'cvxpy': FREE, flexible
 - 'gurobi': Commercial, fastest (requires license)
 

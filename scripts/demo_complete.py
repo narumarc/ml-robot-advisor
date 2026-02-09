@@ -16,7 +16,7 @@ import yfinance as yf
 
 # Imports locaux (à adapter selon votre structure)
 import sys
-sys.path.append('/home/claude/robo-advisor-project')
+sys.path.append('/home/narisoa/LocInstall/robo-advisor-project/robo-advisor-project')
 
 from config.settings import settings
 from config.logging_config import setup_logging, get_logger
@@ -50,7 +50,7 @@ def main():
     # Télécharger les prix
     prices_df = yf.download(tickers, start=start_date, end=end_date)['Adj Close']
     
-    logger.info(f"✅ Données téléchargées: {prices_df.shape}")
+    logger.info(f" Données téléchargées: {prices_df.shape}")
     logger.info(f"   - {len(tickers)} actifs")
     logger.info(f"   - {len(prices_df)} jours de données")
     
@@ -63,7 +63,7 @@ def main():
     
     # Calcul des rendements
     returns = prices_df.pct_change().dropna()
-    logger.info(f"✅ Rendements calculés: {returns.shape}")
+    logger.info(f" Rendements calculés: {returns.shape}")
     
     # Calcul des features techniques
     features = {}
@@ -91,7 +91,7 @@ def main():
         
         features[ticker] = ticker_features.dropna()
     
-    logger.info(f"✅ Features engineering terminé")
+    logger.info(f" Features engineering terminé")
     logger.info(f"   - {len(features)} actifs")
     logger.info(f"   - {features['AAPL'].shape[1]} features par actif")
     
@@ -115,7 +115,7 @@ def main():
     # Calcul de la matrice de covariance
     covariance_matrix = returns.tail(252).cov() * 252  # Annualisée
     
-    logger.info(f"\n✅ Prédictions ML complétées")
+    logger.info(f"\n Prédictions ML complétées")
     logger.info(f"   - Rendements moyens: {expected_returns.mean():.2%}")
     logger.info(f"   - Volatilité moyenne: {np.sqrt(np.diag(covariance_matrix)).mean():.2%}")
     
@@ -144,7 +144,7 @@ def main():
             min_position_size=0.02
         )
         
-        logger.info(f"✅ Optimisation Markowitz réussie")
+        logger.info(f" Optimisation Markowitz réussie")
         logger.info(f"   - Rendement attendu: {result_markowitz.expected_return:.2%}")
         logger.info(f"   - Risque (volatilité): {result_markowitz.expected_risk:.2%}")
         logger.info(f"   - Ratio de Sharpe: {result_markowitz.sharpe_ratio:.4f}")
@@ -162,7 +162,7 @@ def main():
             max_position_size=0.15
         )
         
-        logger.info(f"✅ Risk Parity optimisation réussie")
+        logger.info(f" Risk Parity optimisation réussie")
         logger.info(f"   - Risque (volatilité): {result_risk_parity.expected_risk:.2%}")
         logger.info(f"\nPoids Risk Parity:")
         for ticker, weight in sorted(result_risk_parity.weights.items(), key=lambda x: -x[1]):
@@ -183,13 +183,13 @@ def main():
             max_position_size=0.15
         )
         
-        logger.info(f"✅ CVaR optimisation réussie")
+        logger.info(f" CVaR optimisation réussie")
         logger.info(f"   - CVaR (95%): {result_cvar.metadata['cvar']:.4f}")
         logger.info(f"   - VaR (95%): {result_cvar.metadata['var']:.4f}")
         logger.info(f"   - Rendement attendu: {result_cvar.expected_return:.2%}")
         
     except ImportError:
-        logger.warning("⚠️  Gurobi non disponible - simulation des résultats")
+        logger.warning(" Gurobi non disponible - simulation des résultats")
         # Utiliser des poids équipondérés pour la démo
         weights = {ticker: 1/len(tickers) for ticker in tickers}
         portfolio_return = expected_returns.mean()
@@ -333,9 +333,9 @@ def main():
     logger.info(f"Threshold: {drift_threshold:.4f}")
     
     if drift_score > drift_threshold:
-        logger.warning("⚠️  DRIFT DÉTECTÉ! Retraining recommandé.")
+        logger.warning("⚠  DRIFT DÉTECTÉ! Retraining recommandé.")
     else:
-        logger.info("✅ Pas de drift significatif détecté")
+        logger.info(" Pas de drift significatif détecté")
     
     # Performance Monitoring
     logger.info("\n7B. Model Performance Monitoring")
@@ -352,9 +352,9 @@ def main():
     # Retraining Decision
     performance_threshold = 0.03
     if rmse > performance_threshold:
-        logger.warning("⚠️  Performance dégradée! Retraining recommandé.")
+        logger.warning("⚠ Performance dégradée! Retraining recommandé.")
     else:
-        logger.info("✅ Performance du modèle satisfaisante")
+        logger.info(" Performance du modèle satisfaisante")
     
     # ========================================================================
     # 8. REBALANCING
@@ -386,7 +386,7 @@ def main():
         logger.info(f"Threshold de rebalancing: {settings.rebalance_threshold:.2%}")
         
         if max_deviation > settings.rebalance_threshold:
-            logger.warning("⚠️  Rebalancing nécessaire!")
+            logger.warning("  Rebalancing nécessaire!")
             logger.info("\nTrades recommandés:")
             for ticker in tickers:
                 trade = optimal_weights[ticker] - current_weights[ticker]
@@ -394,7 +394,7 @@ def main():
                     action = "ACHETER" if trade > 0 else "VENDRE"
                     logger.info(f"   {ticker:6s}: {action} {abs(trade):>7.2%}")
         else:
-            logger.info("✅ Pas de rebalancing nécessaire")
+            logger.info(" Pas de rebalancing nécessaire")
     except:
         logger.info("Calcul de rebalancing (simulation)")
     
@@ -406,26 +406,26 @@ def main():
     logger.info("="*80)
     
     logger.info(f"""
-✅ ETL & Data Pipeline: {len(tickers)} actifs, {len(prices_df)} jours
-✅ Feature Engineering: {len(features)} actifs avec features techniques
-✅ ML Predictions: Rendements et volatilité prédits
-✅ Optimisation Mathématique:
+ ETL & Data Pipeline: {len(tickers)} actifs, {len(prices_df)} jours
+Feature Engineering: {len(features)} actifs avec features techniques
+ML Predictions: Rendements et volatilité prédits
+ Optimisation Mathématique:
    - Markowitz (max Sharpe): {result_markowitz.sharpe_ratio:.4f if 'result_markowitz' in locals() else 'N/A'}
    - Risk Parity
    - CVaR Optimization
-✅ Gestion des Risques:
+Gestion des Risques:
    - VaR 95%: {var_95:.2%}
    - Expected Shortfall: {es_95:.2%}
    - Max Drawdown: {max_drawdown:.2%}
    - Stress Tests: 2 scénarios
-✅ Backtesting:
+ Backtesting:
    - Sharpe Ratio: {sharpe_ratio:.4f}
    - Sortino Ratio: {sortino_ratio:.4f}
    - Win Rate: {win_rate:.2%}
-✅ MLOps Monitoring:
-   - Drift Detection: {'⚠️  Drift détecté' if drift_score > drift_threshold else '✅ Pas de drift'}
+ MLOps Monitoring:
+   - Drift Detection: {'⚠  Drift détecté' if drift_score > drift_threshold else 'Pas de drift'}
    - Performance: RMSE = {rmse:.4f}
-✅ Rebalancing: {'⚠️  Nécessaire' if max_deviation > settings.rebalance_threshold else '✅ Pas nécessaire'}
+ Rebalancing: {'⚠ Nécessaire' if max_deviation > settings.rebalance_threshold else ' Pas nécessaire'}
     """)
     
     logger.info("\n" + "="*80)

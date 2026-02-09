@@ -60,7 +60,7 @@ class Settings(BaseSettings):
     @validator("optimization_solver")
     def validate_solver(cls, v):
         """Validate optimization solver choice."""
-        allowed = ["GUROBI", "ORTOOLS", "CVXPY"]
+        allowed = ["GUROBI","HIGHS", "ORTOOLS", "CVXPY"]
         if v.upper() not in allowed:
             raise ValueError(f"Solver must be one of {allowed}")
         return v.upper()
