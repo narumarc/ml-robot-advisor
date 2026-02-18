@@ -84,7 +84,7 @@ class SolverFactory:
                     "Gurobi solver not available. You need to:\n"
                     "1. pip install gurobipy\n"
                     "2. Obtain Gurobi license (academic or commercial)\n"
-                    "3. Activate license with: grbgetkey YOUR_KEY\n\n"
+                    "3. Activate license with: grbgetkey KEY\n\n"
                     "Consider using 'highs' (free) instead."
                 )
         
