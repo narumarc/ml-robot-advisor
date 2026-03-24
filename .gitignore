@@ -3,7 +3,7 @@ scripts/
 
 # Environment
 .env
-.env.exemple
+.env.example
 
 # Python
 __pycache__/
@@ -19,3 +19,6 @@ notebooks/2.1.0
 
 # OS
 .DS_Store
+
+Dockerfile
+run_api.sh
