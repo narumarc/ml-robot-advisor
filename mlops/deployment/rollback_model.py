@@ -30,12 +30,12 @@ def rollback_to_backup(backup_path: Path, deployment_dir: Path) -> bool:
         
         # Restore from backup
         shutil.copy2(backup_path, target_path)
-        logger.info(f"✅ Rolled back to: {backup_path.name}")
+        logger.info(f" Rolled back to: {backup_path.name}")
         
         return True
         
     except Exception as e:
-        logger.error(f"❌ Rollback failed: {e}")
+        logger.error(f" Rollback failed: {e}")
         return False
 
 def main():
@@ -52,14 +52,14 @@ def main():
     backup_dir = deployment_dir / "backups"
     
     if not backup_dir.exists():
-        logger.error("❌ No backups found")
+        logger.error(" No backups found")
         sys.exit(1)
     
     # List backups
     backups = list_backups(backup_dir)
     
     if not backups:
-        logger.error("❌ No backups available")
+        logger.error(" No backups available")
         sys.exit(1)
     
     logger.info(f"Found {len(backups)} backups:")
@@ -70,7 +70,7 @@ def main():
     if args.version:
         backup_path = backup_dir / f"model_backup_{args.version}.pkl"
         if not backup_path.exists():
-            logger.error(f"❌ Backup not found: {backup_path}")
+            logger.error(f" Backup not found: {backup_path}")
             sys.exit(1)
     else:
         # Use most recent backup
@@ -79,10 +79,10 @@ def main():
     
     # Perform rollback
     if rollback_to_backup(backup_path, deployment_dir):
-        logger.info("✅ ROLLBACK SUCCESSFUL")
+        logger.info(" ROLLBACK SUCCESSFUL")
         sys.exit(0)
     else:
-        logger.error("❌ ROLLBACK FAILED")
+        logger.error(" ROLLBACK FAILED")
         sys.exit(1)
 
 if __name__ == "__main__":

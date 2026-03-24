@@ -52,7 +52,7 @@ class DataQualityChecker:
         Returns:
             Dictionary with leakage detection results
         """
-        logger.info("🔍 Checking for data leakage...")
+        logger.info(" Checking for data leakage...")
         issues = []
         
         # 1. Check for duplicate rows between train and test
@@ -67,7 +67,7 @@ class DataQualityChecker:
                 "count": len(duplicates),
                 "message": f"{len(duplicates)} identical rows found in both train and test sets"
             })
-            logger.warning(f"⚠️  Found {len(duplicates)} duplicate rows")
+            logger.warning(f"⚠  Found {len(duplicates)} duplicate rows")
         
         # 2. Check for temporal leakage
         if 'date' in train_data.columns and 'date' in test_data.columns:
@@ -104,7 +104,7 @@ class DataQualityChecker:
                     "correlations": {feat: float(correlations[feat]) for feat in high_corr_features},
                     "message": f"Features suspiciously correlated with target (>0.95): {high_corr_features}"
                 })
-                logger.warning(f"⚠️  Potential target leakage: {high_corr_features}")
+                logger.warning(f"⚠ Potential target leakage: {high_corr_features}")
         
         # 4. Check for look-ahead bias (future information in feature names)
         future_keywords = ['future', 'next', 'forward', 't+1', 'lag-', 'lead']
@@ -121,7 +121,7 @@ class DataQualityChecker:
                 "features": leaky_features,
                 "message": f"Features may contain future information: {leaky_features}"
             })
-            logger.warning(f"⚠️  Possible look-ahead bias in features: {leaky_features}")
+            logger.warning(f"⚠  Possible look-ahead bias in features: {leaky_features}")
         
         # 5. Check for train/test contamination (test indices in train)
         if 'index' in train_data.columns and 'index' in test_data.columns:
@@ -136,7 +136,7 @@ class DataQualityChecker:
                     "count": len(contamination),
                     "message": f"{len(contamination)} indices appear in both train and test"
                 })
-                logger.error(f"❌ Index contamination detected: {len(contamination)} rows")
+                logger.error(f" Index contamination detected: {len(contamination)} rows")
         
         result = {
             "leakage_detected": len(issues) > 0,
@@ -146,7 +146,7 @@ class DataQualityChecker:
         }
         
         if not issues:
-            logger.info("✅ No data leakage detected")
+            logger.info(" No data leakage detected")
         
         return result
     
@@ -165,7 +165,7 @@ class DataQualityChecker:
         Returns:
             Dictionary with missing value statistics
         """
-        logger.info("🔍 Checking for missing values...")
+        logger.info(" Checking for missing values...")
         
         missing_counts = data.isnull().sum()
         missing_pct = (missing_counts / len(data)) * 100
@@ -184,9 +184,9 @@ class DataQualityChecker:
         }
         
         if problematic_cols:
-            logger.warning(f"⚠️  {len(problematic_cols)} columns exceed {threshold_pct}% missing")
+            logger.warning(f"⚠  {len(problematic_cols)} columns exceed {threshold_pct}% missing")
         else:
-            logger.info("✅ Missing values within acceptable range")
+            logger.info(" Missing values within acceptable range")
         
         return result
     
@@ -250,9 +250,9 @@ class DataQualityChecker:
         }
         
         if outliers:
-            logger.warning(f"⚠️  Outliers detected in {len(outliers)} columns")
+            logger.warning(f"⚠  Outliers detected in {len(outliers)} columns")
         else:
-            logger.info("✅ No significant outliers detected")
+            logger.info(" No significant outliers detected")
         
         return result
     
@@ -273,7 +273,7 @@ class DataQualityChecker:
         Returns:
             Dictionary with distribution shift results
         """
-        logger.info("🔍 Checking for distribution shifts...")
+        logger.info(" Checking for distribution shifts...")
         
         shifts = {}
         numeric_cols = train_data.select_dtypes(include=[np.number]).columns
@@ -310,9 +310,9 @@ class DataQualityChecker:
         }
         
         if shifted_features:
-            logger.warning(f"⚠️  Distribution shift detected in {len(shifted_features)} features")
+            logger.warning(f" Distribution shift detected in {len(shifted_features)} features")
         else:
-            logger.info("✅ No significant distribution shifts detected")
+            logger.info(" No significant distribution shifts detected")
         
         return result
     
@@ -333,7 +333,7 @@ class DataQualityChecker:
         Returns:
             Dictionary with class imbalance information
         """
-        logger.info("🔍 Checking for class imbalance...")
+        logger.info(" Checking for class imbalance...")
         
         if target_col not in data.columns:
             return {"error": f"Target column '{target_col}' not found"}
@@ -360,11 +360,11 @@ class DataQualityChecker:
         
         if result["imbalanced"]:
             logger.warning(
-                f"⚠️  Class imbalance detected: ratio = {imbalance_ratio:.2f} "
+                f"  Class imbalance detected: ratio = {imbalance_ratio:.2f} "
                 f"(threshold: {threshold_ratio})"
             )
         else:
-            logger.info("✅ Classes are reasonably balanced")
+            logger.info(" Classes are reasonably balanced")
         
         return result
     
@@ -448,7 +448,7 @@ class DataQualityChecker:
         logger.info("="*80)
         logger.info(f"Critical issues: {results['summary']['critical_issues_count']}")
         logger.info(f"Warnings: {results['summary']['warnings_count']}")
-        logger.info(f"Overall status: {'✅ PASSED' if results['summary']['passed'] else '❌ FAILED'}")
+        logger.info(f"Overall status: {' PASSED' if results['summary']['passed'] else '❌ FAILED'}")
         logger.info("="*80)
         
         return results

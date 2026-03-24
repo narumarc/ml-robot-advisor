@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # API FastAPI
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: robo-advisor-api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      # Connect to your local MongoDB
+      - MONGODB_URL=mongodb://admin:password123@localhost:27017
+      # Redis skipped
+      - REDIS_URL=redis://localhost:6379
+      # Skip MLflow (can run locally if desired)
+      - MLFLOW_TRACKING_URI=http://localhost:5000
+    volumes:
+      - ./src:/app/src
+      - ./config:/app/config
+      - ./mlruns:/app/mlruns
+    networks:
+      - robo-advisor-network
+    command: uvicorn src.presentation.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Streamlit Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: robo-advisor-dashboard
+    restart: always
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://api:8000
+    depends_on:
+      - api
+    volumes:
+      - ./src/presentation/dashboard:/app/dashboard
+    networks:
+      - robo-advisor-network
+    command: streamlit run dashboard/app.py --server.port=8501 --server.address=0.0.0.0
+
+networks:
+  robo-advisor-network:
+    driver: bridge

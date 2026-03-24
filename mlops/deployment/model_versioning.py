@@ -54,7 +54,7 @@ class ModelRegistry:
         self.registry["models"].append(model_entry)
         self._save_registry()
         
-        logger.info(f"✅ Registered {model_name} v{version}")
+        logger.info(f" Registered {model_name} v{version}")
         return version
     
     def promote_to_production(self, model_name: str, version: str) -> bool:
@@ -71,10 +71,10 @@ class ModelRegistry:
                 model["status"] = "production"
                 model["promoted_at"] = datetime.now().isoformat()
                 self._save_registry()
-                logger.info(f"✅ Promoted {model_name} v{version} to production")
+                logger.info(f" Promoted {model_name} v{version} to production")
                 return True
         
-        logger.error(f"❌ Model {model_name} v{version} not found")
+        logger.error(f" Model {model_name} v{version} not found")
         return False
     
     def get_production_model(self, model_name: str) -> Dict:

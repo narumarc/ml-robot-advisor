@@ -65,18 +65,18 @@ def main():
         with open(output_path, 'w') as f:
             json.dump(results, f, indent=2, default=str)
         
-        logger.info(f"✅ Report saved to {output_path}")
+        logger.info(f" Report saved to {output_path}")
         
         # Exit based on results
         if results["summary"]["critical_issues_count"] > 0:
-            logger.error("❌ CRITICAL DATA QUALITY ISSUES FOUND!")
+            logger.error(" CRITICAL DATA QUALITY ISSUES FOUND!")
             sys.exit(1)
         else:
-            logger.info("✅ All data quality checks passed")
+            logger.info(" All data quality checks passed")
             sys.exit(0)
             
     except Exception as e:
-        logger.error(f"❌ Data quality check failed: {e}", exc_info=True)
+        logger.error(f" Data quality check failed: {e}", exc_info=True)
         sys.exit(1)
 
 

@@ -1,2 +1,21 @@
 docs/
 scripts/
+
+# Environment
+.env
+.env.exemple
+
+# Python
+__pycache__/
+*.pyc
+
+# MLflow
+mlruns/
+mlflow/
+
+# Notebooks
+notebooks/data/
+notebooks/2.1.0
+
+# OS
+.DS_Store
